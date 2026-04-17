@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TEADROPS — подбор лекарственных трав</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', 'Segoe UI', 'Roboto', 'Helvetica Neue', sans-serif;
+            background: #dee4d8;  /* лаконичный светлый зелёный фон для всей страницы */
+            color: #2c3e2f;
+            line-height: 1.5;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Убираем предыдущее затемнение */
+        body::before {
+            display: none;
+        }
+
+        /* ШАПКА — на фоне back.png с минимальной забеленностью */
+        header {
+            background: url('back.png') no-repeat center center;
+            background-size: cover;
+            position: relative;
+            color: white;
+            padding: 3rem 1rem;
+            text-align: center;
+        }
+
+        /* Лёгкая полупрозрачная заливка поверх фона для читаемости текста */
+        header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.35);  /* минимальное затемнение */
+            z-index: 1;
+        }
+
+        header .hero {
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Шрифты */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+        .hero {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .hero h1 {
+            font-size: 3rem;
+            letter-spacing: 2px;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .hero-sub {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+            opacity: 0.8;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+        }
+
+        /* Блок с преимуществами */
+        .benefits {
+            display: flex;
+            gap: 2rem;
+            justify-content: center;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .benefit-card {
+            background: #fffafa;
+            border-radius: 20px;
+            padding: 1.5rem;
+            text-align: center;
+            flex: 1;
+            min-width: 200px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+
+        .benefit-card h3 {
+            color: #2c5e2a;
+            margin-bottom: 0.5rem;
+        }
+
+        /* Стили для случайных трав */
+        .section-title {
+            font-size: 1.8rem;
+            color: #2c5e2a;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .herbs-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+        }
+
+        .herb-card {
+            background: #fffafa;
+            border-radius: 16px;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            width: 400px;
+            padding: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .herb-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .herb-card img {
+            width: 100%;
+            height: 150px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 0.75rem;
+        }
+
+        .herb-card h3 {
+            color: #2c5e2a;
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        .herb-card p {
+            font-size: 0.9rem;
+            color: #555;
+            margin-bottom: 1rem;
+            line-height: 1.4;
+        }
+
+        .herb-card a {
+            color: #3e7e3a;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        button {
+            background: #2c5e2a;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 40px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+
+        button:hover {
+            background: #1e401c;
+        }
+
+        .btn-container {
+            text-align: center;
+            margin: 1rem 0 2rem;
+        }
+
+        /* Стили Чайного мастера */
+        .master-section {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 24px;
+            padding: 2rem;
+            margin-top: 1rem;
+            backdrop-filter: blur(2px);
+        }
+
+        .questionnaire {
+            margin-bottom: 1.5rem;
+        }
+
+        .question-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .question-group h3 {
+            color: #2c5e2a;
+            margin-bottom: 1rem;
+        }
+
+        .options {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.8rem;
+        }
+
+        .option {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: #f0f0e8;
+            padding: 0.5rem 1rem;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .option:hover {
+            background: #e0e0d8;
+        }
+
+        .option input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+        }
+
+        .option label {
+            cursor: pointer;
+        }
+
+        .results {
+            display: flex;
+            gap: 2rem;
+            margin-top: 1.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .herb-column {
+            flex: 1;
+            min-width: 280px;
+            max-width: 400px;
+            background: #fffafa;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .herb-column:hover {
+            transform: translateY(-5px);
+        }
+
+        .herb-column img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .herb-name {
+            font-size: 1.3rem;
+            font-weight: bold;
+            padding: 1rem;
+            background: #2c5e2a;
+            color: white;
+            text-align: center;
+        }
+
+        .match-block {
+            padding: 1rem;
+            border-bottom: 1px solid #e0e0d8;
+        }
+
+        .match-block h4 {
+            color: #2c5e2a;
+            margin-bottom: 0.75rem;
+        }
+
+        .match-text {
+            background: #e8f5e9;
+            padding: 0.75rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .contra-block {
+            padding: 1rem;
+        }
+
+        .contra-block h4 {
+            color: #c62828;
+            margin-bottom: 0.75rem;
+        }
+
+        .contra-text {
+            background: #ffebee;
+            padding: 0.75rem;
+            border-radius: 12px;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .read-more {
+            display: inline-block;
+            margin-top: 0.5rem;
+            color: #3e7e3a;
+            text-decoration: none;
+            font-size: 0.85rem;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 2rem;
+            color: #666;
+        }
+
+        /* Подсказка под кнопкой */
+        .hint-text {
+            text-align: center;
+            color: #666;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
+        }
+
+        /* Футер со ссылками */
+        footer {
+            background: rgba(44, 62, 47, 0.95);
+            color: white;
+            text-align: center;
+            padding: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .footer-links {
+            display: flex;
+            justify-content: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: #c8e6c9;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            text-decoration: underline;
+        }
+
+        .copyright {
+            font-size: 0.8rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 900px) {
+            .results, .herbs-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+            .container {
+                padding: 0 1rem;
+            }
+            .hero h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="hero">
+            <h1>TEADROPS</h1>
+            <p>Сила природы в каждой чашке</p>
+            <div class="hero-sub">
+                Откройте для себя мир лекарственных трав. Они — те, которые заботятся о вашем здоровье мягко и естественно.
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Блок преимуществ / второй заголовок -->
+        <div class="benefits">
+            <div class="benefit-card">
+                <h3>⚡ 2 минуты ⚡</h3>
+                <p>Ваш идеальный травяной набор</p>
+            </div>
+            <div class="benefit-card">
+                <h3>🌿 Индивидуально 🌿</h3>
+                <p>Подбор под ваш запрос</p>
+            </div>
+            <div class="benefit-card">
+                <h3>🍵 Натурально 🍵</h3>
+                <p>Только сила природы</p>
+            </div>
+        </div>
+
+        <div class="master-section">
+            <h2 class="section-title">Ваш идеальный травяной набор — за 2 минуты</h2>
+            <p style="text-align: center; margin-bottom: 1.5rem; color: #555;">
+                Не знаете, что подойдет именно вам? Пройдите короткий опрос. Мы подберем травы, 
+                которые помогут спать крепче, иметь больше энергии и чувствовать себя лучше.
+            </p>
+
+            <div class="questionnaire">
+                <div class="question-group">
+                    <h3>Что вас беспокоит?</h3>
+                    <div class="options" id="symptomsOptions"></div>
+                </div>
+
+                <div class="question-group">
+                    <h3>На что хотите сделать акцент?</h3>
+                    <div class="options" id="boostOptions"></div>
+                </div>
+
+                <div class="btn-container">
+                    <button id="findBtn">🌿Подобрать травы</button>
+                </div>
+                
+                <div id="masterResults" class="results">
+                    <div class="no-results">✨ Выберите симптомы выше</div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <h2 class="section-title" style="margin-top: 2rem;">🌱 Случайные травы 🌱</h2>
+        <div class="btn-container">
+            <button id="refreshBtn">🎲Обновить</button>
+        </div>
+        <div id="herbsContainer" class="herbs-grid">
+            <div class="no-results">Загрузка трав...</div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="footer-links">
+            <a href="https://kubstu.ru" target="_blank">🏛️ По заказу КубГТУ</a>
+            <a href="https://github.com/KrotovayaNora/Alonqweu.github.io" target="_blank">👨‍💻github.com</a>
+            <a href="mailto:shizanwanted@gmail.com">✉️ Почта для связи (не нада): shizanwanted@gmail.com</a>
+        </div>
+        <div class="copyright">© 2026 TEADROPS — сила природы в каждой чашке</div>
+    </footer>
+
+    <script>
+        let herbsData = [];
+
+        // НОВЫЕ КЛЮЧЕВЫЕ СЛОВА (по вашему запросу)
+            // ОБЪЕДИНЁННЫЕ КЛЮЧЕВЫЕ СЛОВА (ваши + мои)
+        const questions = {
+            symptoms: [
+                { 
+                    value: "stress", 
+                    label: "😰 Стресс и тревога", 
+                    keywords: ["стресс", "тревож", "тревог", "усталос", "успок", "нерв", "тревожность", "нервное напряжение", "беспокойство"] 
+                },
+                { 
+                    value: "sleep", 
+                    label: "😴 Проблемы со сном", 
+                    keywords: ["бессонниц", "сон", "беспокойный сон"] 
+                },
+                { 
+                    value: "digestion", 
+                    label: "🍽️ Проблемы с пищеварением", 
+                    keywords: ["жкт", "пищеварен", "пищеварение", "спазмы", "метеоризм", "тошнота", "колики", "перистальтика"] 
+                },
+                { 
+                    value: "fatigue", 
+                    label: "😩 Усталость и слабость", 
+                    keywords: ["слабос", "устал", "вынослив", "сил", "усталость", "восстановление", "утомление"] 
+                },
+                { 
+                    value: "immunity", 
+                    label: "🛡️ Слабый иммунитет", 
+                    keywords: ["иммунитет", "здоровь", "тонус", "состоян", "противовирусное", "защита"] 
+                },
+                { 
+                    value: "headache", 
+                    label: "🤕 Головная боль", 
+                    keywords: ["головн", "мигрен", "головная боль"] 
+                }
+            ],
+            boost: [
+                { 
+                    value: "nerves", 
+                    label: "🧠 Успокоить нервную систему", 
+                    keywords: ["стресс", "тревож", "тревог", "усталос", "успок", "нерв", "нервная система", "успокаивает", "тревожность"] 
+                },
+                { 
+                    value: "digestion", 
+                    label: "🍃 Улучшить пищеварение", 
+                    keywords: ["жкт", "пищеварен", "пищеварение", "перистальтика", "аппетит", "желудок"] 
+                },
+                { 
+                    value: "energy", 
+                    label: "⚡ Повысить энергию и тонус", 
+                    keywords: ["сустав", "выносливость", "энергия", "тонизирующее", "адаптоген"] 
+                },
+                { 
+                    value: "immunity", 
+                    label: "🛡️ Укрепить иммунитет", 
+                    keywords: ["иммунитет", "здоровь", "тонус", "состоян", "защита", "противовирусное"] 
+                },
+                { 
+                    value: "memory", 
+                    label: "🧠 Улучшить память", 
+                    keywords: ["когнит", "головн", "мигрен", "умст", "память", "концентрация", "когнитивные"] 
+                }
+            ]
+        };
+
+        function loadQuestionnaire() {
+            const symptomsContainer = document.getElementById('symptomsOptions');
+            const boostContainer = document.getElementById('boostOptions');
+
+            symptomsContainer.innerHTML = '';
+            boostContainer.innerHTML = '';
+
+            questions.symptoms.forEach(q => {
+                symptomsContainer.innerHTML += `
+                    <div class="option">
+                        <input type="checkbox" id="sym_${q.value}" value="${q.value}">
+                        <label for="sym_${q.value}">${q.label}</label>
+                    </div>
+                `;
+            });
+
+            questions.boost.forEach(q => {
+                boostContainer.innerHTML += `
+                    <div class="option">
+                        <input type="checkbox" id="boost_${q.value}" value="${q.value}">
+                        <label for="boost_${q.value}">${q.label}</label>
+                    </div>
+                `;
+            });
+        }
+
+        function getSelectedKeywords() {
+            let keywords = [];
+
+            questions.symptoms.forEach(q => {
+                const checkbox = document.getElementById(`sym_${q.value}`);
+                if (checkbox && checkbox.checked) {
+                    keywords.push(...q.keywords);
+                }
+            });
+
+            questions.boost.forEach(q => {
+                const checkbox = document.getElementById(`boost_${q.value}`);
+                if (checkbox && checkbox.checked) {
+                    keywords.push(...q.keywords);
+                }
+            });
+
+            return [...new Set(keywords)];
+        }
+
+        // ПОДСЧЁТ КОЛИЧЕСТВА СОВПАДЕНИЙ (НЕ ПРОЦЕНТ)
+        function calculateMatchCount(herb, keywords) {
+            if (keywords.length === 0) return 0;
+
+            const pharmaLower = (herb.pharmacology || "").toLowerCase();
+            const folkLower = (herb.folk_usage || "").toLowerCase();
+
+            let pharmaMatches = 0;
+            let folkMatches = 0;
+
+            keywords.forEach(kw => {
+                if (pharmaLower.includes(kw.toLowerCase())) pharmaMatches++;
+                if (folkLower.includes(kw.toLowerCase())) folkMatches++;
+            });
+
+            // Приоритет: фармакология (вес 1), народная медицина (вес 0.5)
+            return pharmaMatches * 1 + folkMatches * 0.5;
+        }
+
+        function findBestMatches(herb, keywords, text, maxSentences = 2) {
+            if (!keywords.length || !text) return [];
+
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 30);
+            const matches = [];
+
+            sentences.forEach(sentence => {
+                let matchCount = 0;
+                keywords.forEach(kw => {
+                    if (sentence.toLowerCase().includes(kw.toLowerCase())) {
+                        matchCount++;
+                    }
+                });
+                if (matchCount > 0) {
+                    matches.push({ text: sentence.trim() + ".", score: matchCount });
+                }
+            });
+
+            matches.sort((a, b) => b.score - a.score);
+            return matches.slice(0, maxSentences).map(m => m.text);
+        }
+
+        function getContraindicationsPreview(herb, maxSentences = 2) {
+            const text = herb.contraindications || "";
+            const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 20);
+            return sentences.slice(0, maxSentences).map(s => s.trim() + ".");
+        }
+
+        function updateMasterResults() {
+            const keywords = getSelectedKeywords();
+            const resultsContainer = document.getElementById('masterResults');
+
+            if (herbsData.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">📂 База данных не загружена</div>';
+                return;
+            }
+
+            if (keywords.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">✨ Выберите симптомы выше</div>';
+                return;
+            }
+
+            // Считаем количество совпадений для каждой травы
+            const scoredHerbs = herbsData.map(herb => ({
+                ...herb,
+                matchCount: calculateMatchCount(herb, keywords)
+            }));
+
+            // Сортируем по количеству совпадений (от большего к меньшему)
+            scoredHerbs.sort((a, b) => b.matchCount - a.matchCount);
+            const topHerbs = scoredHerbs.filter(h => h.matchCount > 0).slice(0, 3);
+
+            if (topHerbs.length === 0) {
+                resultsContainer.innerHTML = '<div class="no-results">😔 По вашему запросу ничего не найдено</div>';
+                return;
+            }
+
+            resultsContainer.innerHTML = topHerbs.map(herb => {
+                const pharmaMatches = findBestMatches(herb, keywords, herb.pharmacology, 2);
+                const folkMatches = findBestMatches(herb, keywords, herb.folk_usage, 2);
+                const contraindications = getContraindicationsPreview(herb, 2);
+                const allMatches = [...pharmaMatches, ...folkMatches];
+                const imageUrl = herb.image_url || `https://placehold.co/400x200?text=${encodeURIComponent(herb.name)}`;
+
+                // Округляем количество совпадений до целого числа
+                const matchCountDisplay = Math.round(herb.matchCount);
+
+                return `
+                    <div class="herb-column" style="max-width: ${topHerbs.length === 1 ? '600px' : (topHerbs.length === 2 ? '450px' : '400px')}; margin: 0 auto;">
+                        <img src="${imageUrl}" alt="${herb.name}" onerror="this.src='https://placehold.co/400x200?text=${herb.name}'">
+                        <div class="herb-name">${herb.name}</div>
+                        <div class="match-block">
+                            <h4>🌿 Совпадений: ${matchCountDisplay}</h4>
+                            ${allMatches.length > 0 ? allMatches.map(text => `<div class="match-text">${text}</div>`).join('') : '<div class="match-text">Совпадений не найдено</div>'}
+                        </div>
+                        <div class="contra-block">
+                            <h4>⚠️ Противопоказания</h4>
+                            ${contraindications.length > 0 ? contraindications.map(text => `<div class="contra-text">${text}</div>`).join('') : '<div class="contra-text">Нет данных</div>'}
+                            <a href="${herb.page_url || '#'}" target="_blank" class="read-more">Подробнее на travypro.ru →</a>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Случайные травы (без изменений)
+        function showRandomHerbs() {
+            if (herbsData.length === 0) return;
+
+            const shuffled = [...herbsData];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            const randomHerbs = shuffled.slice(0, 9);
+
+            const container = document.getElementById('herbsContainer');
+            container.innerHTML = randomHerbs.map(herb => {
+                const imageUrl = herb.image_url || `https://placehold.co/320x150?text=${encodeURIComponent(herb.name)}`;
+                return `
+                    <div class="herb-card">
+                        <img src="${imageUrl}" alt="${herb.name}" onerror="this.src='https://placehold.co/320x150?text=${herb.name}'">
+                        <h3>${herb.name || 'Без названия'}</h3>
+                        <p><strong>Народное применение:</strong> ${(herb.folk_usage || 'Нет данных').substring(0, 120)}...</p>
+                        <a href="${herb.page_url || '#'}" target="_blank">Подробнее →</a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Загрузка базы данных
+        fetch('travy_database.json')
+            .then(response => response.json())
+            .then(data => {
+                herbsData = data;
+                loadQuestionnaire();
+                showRandomHerbs();
+            })
+            .catch(error => {
+                console.error('Ошибка загрузки:', error);
+                document.getElementById('herbsContainer').innerHTML = '<div class="no-results">❌ Ошибка загрузки базы данных. Проверьте файл travy_database.json</div>';
+                document.getElementById('masterResults').innerHTML = '<div class="no-results">❌ Ошибка загрузки базы данных</div>';
+            });
+
+        document.getElementById('refreshBtn').addEventListener('click', showRandomHerbs);
+        document.getElementById('findBtn').addEventListener('click', updateMasterResults);
+    </script>
+</body>
+</html>
