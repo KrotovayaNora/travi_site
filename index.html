@@ -84,6 +84,25 @@
             padding: 0 2rem;
         }
 
+        /* --- НОВЫЙ БЛОК СТАТУСА ИНТЕРНЕТА --- */
+        .internet-status {
+            width: 100%;
+            text-align: center;
+            padding: 0.8rem 1rem;
+            margin-bottom: 1.5rem;
+            border-radius: 40px;
+            font-weight: 500;
+            transition: background-color 0.3s, color 0.3s;
+            background: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #a5d6a7;
+        }
+        .internet-status.offline {
+            background: #ffebee;
+            color: #c62828;
+            border: 1px solid #ef9a9a;
+        }
+
         /* Блок с преимуществами */
         .benefits {
             display: flex;
@@ -393,6 +412,11 @@
     </header>
 
     <div class="container">
+        <!-- НОВЫЙ БЛОК: статус интернета (перед benefits) -->
+        <div id="connectionStatus" class="internet-status">
+            Проверка соединения...
+        </div>
+
         <!-- Блок преимуществ / второй заголовок -->
         <div class="benefits">
             <div class="benefit-card">
@@ -459,6 +483,49 @@
     </footer>
 
     <script>
+        // --- ПРАВИЛЬНАЯ ПРОВЕРКА ИНТЕРНЕТА (реальный пинг) ---
+        const statusDiv = document.getElementById('connectionStatus');
+
+        async function checkRealInternetConnection() {
+            try {
+                // Пробуем загрузить маленький файл с надёжного CDN
+                const response = await fetch('https://www.google.com/favicon.ico', {
+                    method: 'HEAD',
+                    mode: 'no-cors',
+                    cache: 'no-cache',
+                    signal: AbortSignal.timeout(3000) // Таймаут 3 секунды
+                });
+                return true;
+            } catch (error) {
+                return false;
+            }
+        }
+
+        async function updateOnlineStatus() {
+            statusDiv.textContent = '⏳ Проверка соединения...';
+            statusDiv.classList.remove('offline');
+            
+            const hasInternet = await checkRealInternetConnection();
+            
+            if (hasInternet) {
+                statusDiv.textContent = '🌐 Контент доступен в полном объеме';
+                statusDiv.classList.remove('offline');
+            } else {
+                statusDiv.textContent = '⚠️ Доступ к контенту ограничен. Проверьте интернет-соединение';
+                statusDiv.classList.add('offline');
+            }
+        }
+
+        // Проверяем при загрузке
+        updateOnlineStatus();
+
+        // Проверяем каждые 10 секунд
+        setInterval(updateOnlineStatus, 10000);
+
+        // Также проверяем при восстановлении фокуса на окне
+        window.addEventListener('focus', updateOnlineStatus);
+
+        // --- ОСТАЛЬНАЯ ЛОГИКА (без изменений) ---
         let herbsData = [];
 
         // НОВЫЕ КЛЮЧЕВЫЕ СЛОВА (по вашему запросу)
@@ -659,7 +726,7 @@
 
                 return `
                     <div class="herb-column" style="max-width: ${topHerbs.length === 1 ? '600px' : (topHerbs.length === 2 ? '450px' : '400px')}; margin: 0 auto;">
-                        <img src="${imageUrl}" alt="${herb.name}" onerror="this.src='https://placehold.co/400x200?text=${herb.name}'">
+                        <img src="${imageUrl}" alt="${herb.name}" onerror="this.onerror=null; this.src='noInternet.png'">
                         <div class="herb-name">${herb.name}</div>
                         <div class="match-block">
                             <h4>🌿 Совпадений: ${matchCountDisplay}</h4>
@@ -675,7 +742,7 @@
             }).join('');
         }
 
-        // Случайные травы (без изменений)
+        // Случайные травы (с заменой на noInternet.png при ошибке)
         function showRandomHerbs() {
             if (herbsData.length === 0) return;
 
@@ -691,7 +758,7 @@
                 const imageUrl = herb.image_url || `https://placehold.co/320x150?text=${encodeURIComponent(herb.name)}`;
                 return `
                     <div class="herb-card">
-                        <img src="${imageUrl}" alt="${herb.name}" onerror="this.src='https://placehold.co/320x150?text=${herb.name}'">
+                        <img src="${imageUrl}" alt="${herb.name}" onerror="this.onerror=null; this.src='noInternet.png'">
                         <h3>${herb.name || 'Без названия'}</h3>
                         <p><strong>Народное применение:</strong> ${(herb.folk_usage || 'Нет данных').substring(0, 120)}...</p>
                         <a href="${herb.page_url || '#'}" target="_blank">Подробнее →</a>
@@ -699,7 +766,6 @@
                 `;
             }).join('');
         }
-
         // Загрузка базы данных
         fetch('travy_database.json')
             .then(response => response.json())
